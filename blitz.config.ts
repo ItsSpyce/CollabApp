@@ -1,9 +1,9 @@
-import { BlitzConfig, sessionMiddleware, simpleRolesIsAuthorized } from "blitz"
+import { BlitzConfig, sessionMiddleware, simpleRolesIsAuthorized } from 'blitz';
 
 const config: BlitzConfig = {
   middleware: [
     sessionMiddleware({
-      cookiePrefix: "collabApp",
+      cookiePrefix: 'collabApp',
       isAuthorized: simpleRolesIsAuthorized,
     }),
   ],
@@ -15,5 +15,14 @@ const config: BlitzConfig = {
     return config
   },
   */
-}
-module.exports = config
+  async redirects() {
+    return [
+      {
+        source: '/login',
+        destination: '/api/auth/twitter',
+        permanent: true,
+      },
+    ];
+  },
+};
+module.exports = config;

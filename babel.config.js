@@ -1,4 +1,6 @@
 module.exports = {
   presets: ["blitz/babel"],
-  plugins: [],
+  plugins: [["styled-components", {
+    ssr: true
+  }]],
 }
