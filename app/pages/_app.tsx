@@ -42,7 +42,10 @@ export default function App({ Component, pageProps }: AppProps) {
           resetKeys={[router.asPath]}
           onReset={useQueryErrorResetBoundary().reset}
         >
-          <NotificationsContext.Provider value={notifications}>
+          <NotificationsContext.Provider
+            //@ts-ignore
+            value={notifications}
+          >
             {getLayout(<Component {...pageProps} />)}
           </NotificationsContext.Provider>
         </ErrorBoundary>
