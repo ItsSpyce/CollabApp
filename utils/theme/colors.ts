@@ -8,6 +8,7 @@ export const baseColors = {
   teal: '#509DC3',
   purple: '#8C54FF',
   black: '#333333',
+  grayDarker: '#2d2e35',
   grayDark: '#56596C',
   gray: '#8798AD',
   grayLight: '#BFC5D2',
@@ -39,7 +40,7 @@ export const colorTheme = {
   },
   bgSecondary: {
     light: baseColors.offwhite,
-    dark: baseColors.grayDark,
+    dark: baseColors.grayDarker,
   },
   textPrimary: {
     light: baseColors.black,
@@ -51,6 +52,7 @@ export const colorTheme = {
   },
   textTertiary: {
     light: baseColors.grayLighter,
+    dark: baseColors.gray,
   },
   borderSecondary: {
     light: baseColors.grayLighter,

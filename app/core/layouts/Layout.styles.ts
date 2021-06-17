@@ -1,10 +1,14 @@
 import { Box, defaultProps, Image } from 'grommet';
 import { rgba } from 'polished';
 import styled from 'styled-components';
+import Breakpoint from '../enums/breakpoint';
 
 const getTopbarHeight = ({ size }) => (size === 'small' ? '72px' : '60px');
 
-export const StyledAppBar = styled(Box)``;
+export const StyledAppBar = styled(Box)`
+  background-color: ${(props) => props.theme.colors.bg};
+  color: ${(props) => props.theme.colors.textPrimary};
+`;
 
 type MainProps = {
   size: string;
@@ -14,12 +18,19 @@ export const StyledMain = styled(Box)<MainProps>`
   height: calc(100vh - ${getTopbarHeight});
   width: 100vw;
   position: relative;
+  background-color: ${(props) => props.theme.colors.bgSecondary};
+  color: ${(props) => props.theme.colors.textPrimary};
 `;
 
 export const MainContent = styled(Box)`
   border-top: ${defaultProps.theme.global?.borderSize?.xsmall} solid
     ${(props) => rgba(props.theme.colors.borderSecondary, 0.5)};
   width: 100%;
+  padding: 16px 24px;
+
+  ${Breakpoint.MEDIUM.at} {
+    padding: 36px 24px;
+  }
 `;
 
 type FlyoutProps = {
@@ -44,6 +55,7 @@ export const FlyoutContainer = styled(Box)<FlyoutProps>`
   width: ${(props) => props.width};
   text-overflow: clip;
   white-space: nowrap;
+  background-color: ${(props) => props.theme.colors.bg};
 `;
 
 export const FlyoutBackground = styled.div`
@@ -103,6 +115,8 @@ export const StyledSidenavMenuItem = styled(Box)<SidenavMenuItemProps>`
 export const SidenavFooterContainer = styled(Box)`
   position: absolute;
   bottom: 0;
+  text-overflow: clip;
+  white-space: nowrap;
 `;
 
 export const NotificationTextArea = styled(Box)`

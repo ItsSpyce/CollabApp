@@ -47,6 +47,7 @@ model User {
   invitations   Invitation[]
   notifications Notification[]
   sessions      Session[]
+  bookings Booking[]
 }
 
 model Session {
@@ -65,7 +66,7 @@ model Session {
 }
 
 model Invitation {
-  bookingId Int
+  bookingId String
   booking   Booking          @relation(fields: [bookingId], references: [id])
   toId      String
   to        User             @relation(fields: [toId], references: [id])
@@ -77,8 +78,9 @@ model Invitation {
 }
 
 model Booking {
-  id          Int       @id @default(autoincrement())
-  uuid        String    @unique
+  id          String       @id
+  creatorId String
+  creator User @relation(fields: [creatorId], references: [id])
   name        String
   description String
   color       String

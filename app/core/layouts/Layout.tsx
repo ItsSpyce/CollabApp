@@ -51,7 +51,6 @@ type AppBarProps = {
 const AppBar = (props: AppBarProps) => {
   return (
     <StyledAppBar
-      background="bg"
       tag="header"
       direction="row"
       align="center"
@@ -66,9 +65,11 @@ const AppBar = (props: AppBarProps) => {
         icon={<Icons.Menu color="textTertiary" />}
         onClick={props.onClickMenu}
       />
-      <Heading level="3" margin="none" style={{ fontWeight: 'lighter' }}>
-        {props.title}
-      </Heading>
+      {props.title !== 'Home' && (
+        <Heading level="3" margin="none" style={{ fontWeight: 'lighter' }}>
+          {props.title}
+        </Heading>
+      )}
       <Button
         icon={
           <Icons.Notification
@@ -85,7 +86,7 @@ type SidenavMenuProps = {
   user: AuthenticatedUser;
   isShowingHeader: boolean;
   onThemeToggleClick: (value: boolean) => void;
-  onLogoutClicked: Promise<void>;
+  onLogoutClicked: () => void;
   size: string;
   theme: string;
 };
@@ -95,21 +96,39 @@ const sidenavMenuItems = [
     icon: Icons.Projects,
     text: 'Overview',
     href: '/dashboard',
+    requiresAuth: true,
   },
   {
     icon: Icons.AddCircle,
     text: 'New Booking',
     href: '/new',
+    requiresAuth: true,
   },
   {
     icon: Icons.Favorite,
     text: 'About',
     href: '/about',
   },
+  // {
+  //   icon: Icons.Lock,
+  //   text: 'Privacy Policy',
+  //   href: '/privacy',
+  // },
+  // {
+  //   icon: Icons.License,
+  //   text: 'Terms of Service',
+  //   href: '/tos',
+  // },
+  {
+    icon: Icons.Bug,
+    text: 'Report an Issue',
+    href: '/report-issue',
+  },
   {
     icon: Icons.Performance,
     text: 'Settings',
     href: '/settings',
+    requiresAuth: true,
   },
 ];
 
@@ -120,47 +139,81 @@ const SidenavMenu = (props: SidenavMenuProps) => {
   return (
     <Box overflow={{ horizontal: 'hidden' }}>
       <SidenavHeaderContainer flex direction="row" align="center">
-        <ProfilePicture
-          src={props.user.photo!}
-          marginLeft={props.isShowingHeader ? '0px' : '100px'}
-        />
-        <Box>
-          <Text>Welcome</Text>
-          <Text color="textTertiary">{props.user.name}</Text>
-        </Box>
+        {props.user && (
+          <>
+            <ProfilePicture
+              src={props.user.photo!}
+              marginLeft={props.isShowingHeader ? '0px' : '100px'}
+            />
+            <Box>
+              <Text>Welcome</Text>
+              <Text color="textTertiary">{props.user.name}</Text>
+            </Box>
+          </>
+        )}
       </SidenavHeaderContainer>
       <SidenavHeaderLinksSection>
-        {sidenavMenuItems.map((item) => (
-          <Link href={item.href}>
-            <StyledSidenavMenuItem
-              direction="row"
-              isActive={isItemActive(item)}
-              flex
-            >
-              <item.icon
-                color={isItemActive(item) ? 'brand' : 'textSecondary'}
-              />
-              <Text
-                margin={{ horizontal: 'medium' }}
-                color={isItemActive(item) ? 'brand' : 'textSecondary'}
-              >
-                {item.text}
-              </Text>
-            </StyledSidenavMenuItem>
-          </Link>
-        ))}
+        {sidenavMenuItems.map(
+          (item) =>
+            (props.user || !item.requiresAuth) && (
+              <Link href={item.href} key={item.href}>
+                <StyledSidenavMenuItem
+                  direction="row"
+                  isActive={isItemActive(item)}
+                  flex
+                >
+                  <item.icon
+                    color={isItemActive(item) ? 'brand' : 'textSecondary'}
+                  />
+                  <Text
+                    margin={{ horizontal: 'medium' }}
+                    color={isItemActive(item) ? 'brand' : 'textSecondary'}
+                  >
+                    {item.text}
+                  </Text>
+                </StyledSidenavMenuItem>
+              </Link>
+            )
+        )}
       </SidenavHeaderLinksSection>
-      <SidenavFooterContainer>
-        <Box align="center">
+      <SidenavFooterContainer width="full">
+        <Box
+          align="center"
+          direction="row"
+          overflow={{ horizontal: 'hidden' }}
+          justify="around"
+          margin={{ vertical: '24px' }}
+        >
           <ToggleButton
             value={props.theme === 'dark'}
-            onChange={(value) => (value ? 'light' : 'dark')}
+            onChange={(value) => props.onThemeToggleClick(value)}
+            checkedIcon={<Icons.Moon color="brand" size="18px" />}
+            checkedColor="grayDarker"
+            uncheckedIcon={<Icons.Sun size="18px" />}
+            background="brand"
           />
         </Box>
-        <StyledSidenavMenuItem direction="row">
-          <Tip content="Logout">
-            <Icons.Logout color="brand" />
-          </Tip>
+        <StyledSidenavMenuItem
+          direction="row"
+          onClick={props.onLogoutClicked}
+          overflow={{ horizontal: 'hidden' }}
+          flex
+        >
+          {props.user ? (
+            <>
+              <Icons.Logout color="brand" />
+              <Text color="brand" margin={{ horizontal: 'medium' }}>
+                Logout
+              </Text>
+            </>
+          ) : (
+            <>
+              <Icons.Login color="brand" />
+              <Text color="brand" margin={{ horizontal: 'medium' }}>
+                Login
+              </Text>
+            </>
+          )}
         </StyledSidenavMenuItem>
       </SidenavFooterContainer>
     </Box>
@@ -172,7 +225,7 @@ type NotificationsMenuProps = {
   size: string;
 };
 
-const MESSAGE_MAX_CHARS = 55;
+const MESSAGE_MAX_CHARS = 28;
 const transformMessageContent = (content: string) =>
   content.length > MESSAGE_MAX_CHARS
     ? content.substr(0, MESSAGE_MAX_CHARS) + '...'
@@ -181,7 +234,7 @@ const transformMessageContent = (content: string) =>
 const NotificationsMenu = (props: NotificationsMenuProps) => (
   <Box>
     {props.notifications.map((notif) => (
-      <Box flex direction="row" align="center">
+      <Box flex direction="row" align="center" key={notif.id}>
         <Box
           margin={{ horizontal: props.size === 'small' ? 'large' : 'medium' }}
         >
@@ -211,9 +264,10 @@ const NotificationsMenu = (props: NotificationsMenuProps) => (
 const NotificationsMenuItem = (props) => <Box />;
 
 const Layout = ({ title, children }: LayoutProps) => {
-  const logout = useMutation(logoutMutation);
+  const router = useRouter();
+  const [logout] = useMutation(logoutMutation);
   const [user] = useCurrentUser();
-  const [selectedTheme, setSelectedTheme] = useLocalStorage('theme', 'light');
+  const [selectedTheme, setSelectedTheme] = useLocalStorage('theme', 'dark');
   const notifications = useContext(NotificationsContext);
   const [isMenuShowing, setIsMenuShowing] = useState(false);
   const [isNotificationsShowing, setIsNotificationsShowing] = useState(false);
@@ -247,19 +301,16 @@ const Layout = ({ title, children }: LayoutProps) => {
         <ResponsiveContext.Consumer>
           {(size) => (
             <>
-              {user && (
-                <AppBar
-                  //@ts-ignore
-                  user={user}
-                  title={title || ''}
-                  notificationsCount={unreadNotificationsCount}
-                  onClickMenu={showMenu}
-                  onClickNotifications={showNotifications}
-                  size={size}
-                />
-              )}
+              <AppBar
+                //@ts-ignore
+                user={user}
+                title={title || ''}
+                notificationsCount={unreadNotificationsCount}
+                onClickMenu={showMenu}
+                onClickNotifications={showNotifications}
+                size={size}
+              />
               <StyledMain
-                background="bgSecondary"
                 direction="row"
                 flex
                 overflow={{ horizontal: 'hidden', vertical: 'auto' }}
@@ -271,22 +322,25 @@ const Layout = ({ title, children }: LayoutProps) => {
                 <FlyoutContainer
                   flyoutDirection="left"
                   isShowing={isMenuShowing || size !== 'small'}
-                  background="bg"
                   width={size === 'small' || isMenuShowing ? '250px' : '76px'}
                 >
                   <SidenavMenu
                     isShowingHeader={isMenuShowing}
                     size={size}
                     user={user as AuthenticatedUser}
-                    onThemeToggleClick={setSelectedTheme}
-                    onLogoutClicked={Promise.resolve()}
+                    onThemeToggleClick={(value) =>
+                      setSelectedTheme(value ? 'dark' : 'light')
+                    }
+                    onLogoutClicked={async () => {
+                      await logout();
+                      router.reload();
+                    }}
                     theme={selectedTheme}
                   />
                 </FlyoutContainer>
                 <FlyoutContainer
                   flyoutDirection="right"
                   isShowing={isNotificationsShowing}
-                  background="bg"
                   width="300px"
                 >
                   <NotificationsMenu

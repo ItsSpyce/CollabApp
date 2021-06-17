@@ -1,6 +1,7 @@
 import Layout from 'app/core/layouts/Layout';
-import { BlitzPage, useRouter, Link } from 'blitz';
+import { BlitzPage, useRouter } from 'blitz';
 import { useCurrentUser } from 'app/core/hooks';
+import Link from 'app/core/components/Link';
 
 const Home: BlitzPage = () => {
   const [user] = useCurrentUser();

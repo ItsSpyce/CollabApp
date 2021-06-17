@@ -1,40 +1,46 @@
-import { Component } from 'react';
+import { useState, ReactElement } from 'react';
 import { StyledToggleButton, ToggleButtonCircle } from './styles';
 
 type ToggleButtonProps = {
   value?: boolean;
   onChange: (value: boolean) => void;
+  checkedIcon?: ReactElement;
+  uncheckedIcon?: ReactElement;
+  checkedColor?: string;
+  uncheckedColor?: string;
+  background?: string;
 };
 
-export default class ToggleButton extends Component<ToggleButtonProps> {
-  state: {
-    value: boolean;
-  };
+const ToggleButton = ({
+  checkedIcon,
+  uncheckedIcon,
+  checkedColor,
+  uncheckedColor,
+  background,
+  onChange,
+  value,
+}: ToggleButtonProps) => {
+  const [isChecked, setIsChecked] = useState(value || false);
 
-  constructor(props: ToggleButtonProps) {
-    super(props);
-    this.state = {
-      value: props.value || false,
-    };
+  function toggleValue() {
+    setIsChecked(!isChecked);
+    onChange(!isChecked);
   }
+  return (
+    <StyledToggleButton
+      onClick={toggleValue}
+      isChecked={isChecked}
+      color={background || 'brand'}
+    >
+      <ToggleButtonCircle
+        isChecked={isChecked}
+        checkedColor={checkedColor}
+        uncheckedColor={uncheckedColor}
+      >
+        {isChecked ? checkedIcon : uncheckedIcon}
+      </ToggleButtonCircle>
+    </StyledToggleButton>
+  );
+};
 
-  componentDidUpdate({ value }: ToggleButtonProps) {
-    if (value !== this.props.value) {
-      this.setState({ value });
-    }
-  }
-
-  toggleValue = () => {
-    this.setState({ value: !this.state.value }, () => {
-      this.props.onChange(this.state.value);
-    });
-  };
-
-  render() {
-    return (
-      <StyledToggleButton onClick={this.toggleValue}>
-        <ToggleButtonCircle isChecked={this.state.value} />
-      </StyledToggleButton>
-    );
-  }
-}
+export default ToggleButton;

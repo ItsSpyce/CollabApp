@@ -9,4 +9,8 @@ Dashboard.getLayout = (page) => {
   return <Layout title="Dashboard">{page}</Layout>;
 };
 
+Dashboard.authenticate = {
+  redirectTo: '/login',
+};
+
 export default Dashboard;
