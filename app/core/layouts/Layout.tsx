@@ -186,7 +186,7 @@ const SidenavMenu = (props: SidenavMenuProps) => {
         >
           <ToggleButton
             value={props.theme === 'dark'}
-            onChange={(value) => props.onThemeToggleClick(value)}
+            onChange={props.onThemeToggleClick}
             checkedIcon={<Icons.Moon color="brand" size="18px" />}
             checkedColor="grayDarker"
             uncheckedIcon={<Icons.Sun size="18px" />}
@@ -195,7 +195,13 @@ const SidenavMenu = (props: SidenavMenuProps) => {
         </Box>
         <StyledSidenavMenuItem
           direction="row"
-          onClick={props.onLogoutClicked}
+          onClick={() => {
+            if (props.user) {
+              props.onLogoutClicked();
+            } else {
+              router.push('/login');
+            }
+          }}
           overflow={{ horizontal: 'hidden' }}
           flex
         >
@@ -333,7 +339,7 @@ const Layout = ({ title, children }: LayoutProps) => {
                     }
                     onLogoutClicked={async () => {
                       await logout();
-                      router.reload();
+                      router.push('/');
                     }}
                     theme={selectedTheme}
                   />

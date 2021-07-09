@@ -1,8 +1,16 @@
 import Layout from 'app/core/layouts/Layout';
 import { BlitzPage } from 'blitz';
+import BookingsView from 'app/bookings/components/BookingsView';
+import { useCurrentUser } from 'app/core/hooks';
 
 const Dashboard: BlitzPage = (props) => {
-  return <h1>Dashboard</h1>;
+  const [user] = useCurrentUser();
+
+  return (
+    <>
+      <BookingsView user={user!.id} />
+    </>
+  )
 };
 
 Dashboard.getLayout = (page) => {
@@ -10,7 +18,7 @@ Dashboard.getLayout = (page) => {
 };
 
 Dashboard.authenticate = {
-  redirectTo: '/login',
-};
+  redirectTo: '/'
+}
 
 export default Dashboard;
